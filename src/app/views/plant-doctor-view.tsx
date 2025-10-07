@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useGarden } from "@/hooks/use-garden";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { useGarden } from "@/hooks/use-garden.tsx";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -10,14 +11,26 @@ import { Textarea } from "@/components/ui/textarea";
 import { diagnosePlantProblems, type DiagnosePlantProblemsOutput } from "@/ai/flows/diagnose-plant-problems";
 import { Loader2, Sparkles, Stethoscope } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import type { IdentifiedPlant } from "@/lib/types";
+
 
 export default function PlantDoctorView() {
-  const { garden, isInitialized } = useGarden();
+  const { garden, isInitialized, identifiedPlant } = useGarden();
   const [selectedPlant, setSelectedPlant] = useState<string>("");
   const [problemDescription, setProblemDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [diagnosis, setDiagnosis] = useState<DiagnosePlantProblemsOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const activePlantForDiagnosis = identifiedPlant || (garden.find(p => p.commonName === selectedPlant));
+
+  useEffect(() => {
+    if (identifiedPlant) {
+      setSelectedPlant(identifiedPlant.commonName);
+    } else {
+      setSelectedPlant("");
+    }
+  }, [identifiedPlant]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,12 +61,12 @@ export default function PlantDoctorView() {
     return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 
-  if (garden.length === 0) {
+  if (garden.length === 0 && !identifiedPlant) {
     return (
        <div className="text-center flex flex-col items-center justify-center h-full text-muted-foreground">
         <Stethoscope className="w-24 h-24 mb-4 text-primary/50" />
-        <h2 className="font-headline text-2xl font-semibold text-foreground">Add a Plant First</h2>
-        <p>You need plants in your garden to use the Plant Doctor.</p>
+        <h2 className="font-headline text-2xl font-semibold text-foreground">Identify or Add a Plant First</h2>
+        <p>You need a plant to use the Plant Doctor.</p>
       </div>
     );
   }
@@ -66,14 +79,22 @@ export default function PlantDoctorView() {
           <CardDescription>Get an AI-powered diagnosis for your plant's problems.</CardDescription>
         </CardHeader>
         <CardContent>
+          {activePlantForDiagnosis?.photoDataUri && (
+            <div className="relative w-full h-48 rounded-lg overflow-hidden mb-4">
+              <Image src={activePlantForDiagnosis.photoDataUri} alt={activePlantForDiagnosis.commonName} layout="fill" objectFit="cover" />
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="plant-select">Which plant is having issues?</Label>
-              <Select onValueChange={setSelectedPlant} value={selectedPlant}>
+              <Select onValueChange={setSelectedPlant} value={selectedPlant} disabled={!!identifiedPlant}>
                 <SelectTrigger id="plant-select">
                   <SelectValue placeholder="Select a plant" />
                 </SelectTrigger>
                 <SelectContent>
+                  {identifiedPlant && (
+                    <SelectItem key="identified" value={identifiedPlant.commonName}>{identifiedPlant.commonName} (Newly Identified)</SelectItem>
+                  )}
                   {garden.map((plant) => (
                     <SelectItem key={plant.id} value={plant.commonName}>{plant.commonName}</SelectItem>
                   ))}
@@ -109,7 +130,7 @@ export default function PlantDoctorView() {
       {diagnosis && (
         <Card className="shadow-md">
            <CardHeader>
-            <CardTitle className="font-headline flex items-center gap-2"><Sparkles className="text-accent" /> Diagnosis</CardTitle>
+            <CardTitle className="font-headline flex items-center gap-2"><Sparkles className="text-accent" /> Diagnosis for {selectedPlant}</CardTitle>
           </CardHeader>
           <CardContent>
             <Alert>

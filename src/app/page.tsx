@@ -6,6 +6,7 @@ import IdentifyPlantView from "@/app/views/identify-plant-view";
 import PlantDoctorView from "@/app/views/plant-doctor-view";
 import BottomNav from "@/components/layout/bottom-nav";
 import { LeafWiseLogo } from "@/components/icons";
+import { AppProvider } from "@/hooks/use-garden.tsx";
 
 export type View = "identify" | "garden" | "doctor";
 
@@ -26,21 +27,23 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-full max-w-md mx-auto bg-background">
-      <header className="p-4 flex items-center justify-between bg-card/80 backdrop-blur-sm border-b">
-        <div className="flex items-center gap-2">
-          <LeafWiseLogo className="h-8 w-8 text-primary" />
-          <h1 className="font-headline text-2xl font-bold text-foreground">
-            LeafWise
-          </h1>
-        </div>
-      </header>
+    <AppProvider>
+      <div className="flex flex-col h-screen w-full max-w-md mx-auto bg-background">
+        <header className="p-4 flex items-center justify-between bg-card/80 backdrop-blur-sm border-b">
+          <div className="flex items-center gap-2">
+            <LeafWiseLogo className="h-8 w-8 text-primary" />
+            <h1 className="font-headline text-2xl font-bold text-foreground">
+              LeafWise
+            </h1>
+          </div>
+        </header>
 
-      <main className="flex-grow overflow-y-auto p-4 pb-24">
-        {renderView()}
-      </main>
+        <main className="flex-grow overflow-y-auto p-4 pb-24">
+          {renderView()}
+        </main>
 
-      <BottomNav activeView={activeView} setActiveView={setActiveView} />
-    </div>
+        <BottomNav activeView={activeView} setActiveView={setActiveView} />
+      </div>
+    </AppProvider>
   );
 }

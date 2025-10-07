@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import type { Plant } from '@/lib/types';
+import { useState, useEffect, useCallback, createContext, useContext, type ReactNode, type FC } from 'react';
+import type { Plant, IdentifiedPlant, AppContextType } from '@/lib/types';
 
 const GARDEN_STORAGE_KEY = 'leafwise-garden';
 
-export function useGarden() {
+const AppContext = createContext<AppContextType | undefined>(undefined);
+
+export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [garden, setGarden] = useState<Plant[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [identifiedPlant, setIdentifiedPlant] = useState<IdentifiedPlant | null>(null);
 
   useEffect(() => {
     try {
@@ -44,5 +47,24 @@ export function useGarden() {
     setGarden(prevGarden => prevGarden.filter(p => p.id !== plantId));
   }, []);
 
-  return { garden, addPlant, updatePlant, removePlant, isInitialized };
+  const value = {
+    garden,
+    addPlant,
+    updatePlant,
+    removePlant,
+    isInitialized,
+    identifiedPlant,
+    setIdentifiedPlant,
+  };
+  
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+};
+
+
+export function useGarden() {
+  const context = useContext(AppContext);
+  if (context === undefined) {
+    throw new Error('useGarden must be used within an AppProvider');
+  }
+  return context;
 }

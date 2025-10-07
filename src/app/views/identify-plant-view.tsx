@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Camera, Loader2, Sparkles, CheckCircle, BookOpen } from "lucide-react";
 import { identifyPlantFromImage, type IdentifyPlantFromImageOutput } from "@/ai/flows/identify-plant-from-image";
 import { getPlantCareGuide, type GetPlantCareGuideOutput } from "@/ai/flows/get-plant-care-guide";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useGarden } from "@/hooks/use-garden";
+import { useGarden } from "@/hooks/use-garden.tsx";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import {
@@ -31,8 +31,22 @@ export default function IdentifyPlantView() {
   const [isSaved, setIsSaved] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { addPlant } = useGarden();
+  const { addPlant, setIdentifiedPlant } = useGarden();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (result && imagePreview) {
+      setIdentifiedPlant({
+        commonName: result.commonName,
+        latinName: result.latinName,
+        funFact: result.funFact,
+        photoDataUri: imagePreview,
+      });
+    } else {
+      setIdentifiedPlant(null);
+    }
+  }, [result, imagePreview, setIdentifiedPlant]);
+
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -95,7 +109,10 @@ export default function IdentifyPlantView() {
     }
   };
 
-  const triggerFileSelect = () => fileInputRef.current?.click();
+  const triggerFileSelect = () => {
+    setIdentifiedPlant(null);
+    fileInputRef.current?.click();
+  }
 
   return (
     <div className="space-y-6">

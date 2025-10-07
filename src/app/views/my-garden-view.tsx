@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { format, parseISO } from "date-fns";
-import { useGarden } from "@/hooks/use-garden";
+import { useGarden } from "@/hooks/use-garden.tsx";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { predictWateringSchedule, type PredictWateringScheduleOutput } from "@/ai/flows/predict-watering-schedule";
