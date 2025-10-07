@@ -5,10 +5,9 @@ import { format, parseISO } from "date-fns";
 import { useGarden } from "@/hooks/use-garden.tsx";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { predictWateringSchedule, type PredictWateringScheduleOutput } from "@/ai/flows/predict-watering-schedule";
 import { getPlantCareGuide, type GetPlantCareGuideOutput } from "@/ai/flows/get-plant-care-guide";
 import { useState } from "react";
-import { Loader2, Trash2, Droplets, BrainCircuit, BookOpen } from "lucide-react";
+import { Loader2, Trash2, Droplets, BookOpen } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -22,72 +21,6 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Sprout } from 'lucide-react';
 import type { Plant } from "@/lib/types";
-
-
-const PredictionDialog = ({ plant }: { plant: Plant }) => {
-  const [prediction, setPrediction] = useState<PredictWateringScheduleOutput | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handlePredict = async () => {
-    setIsLoading(true);
-    setError(null);
-    setPrediction(null);
-    try {
-      const result = await predictWateringSchedule({
-        plantSpecies: plant.commonName,
-        lastWateringDate: plant.lastWateringDate || new Date().toISOString(),
-      });
-      setPrediction(result);
-    } catch (e) {
-      setError("Couldn't get a prediction. Please try again.");
-      console.error(e);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="w-full">
-          <BrainCircuit className="mr-2 h-4 w-4"/> Predict Next Watering
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="font-headline">Watering Prediction</DialogTitle>
-          <DialogDescription>AI-powered advice for your {plant.commonName}.</DialogDescription>
-        </DialogHeader>
-        <div className="py-4 space-y-4">
-          {!prediction && !isLoading && !error && (
-            <div className="text-center">
-              <Button onClick={handlePredict}>Get Prediction</Button>
-            </div>
-          )}
-          {isLoading && (
-            <div className="flex items-center justify-center p-6 space-x-2 text-muted-foreground">
-              <Loader2 className="h-5 w-5 animate-spin" />
-              <span>Analyzing...</span>
-            </div>
-          )}
-          {error && <p className="text-destructive text-center">{error}</p>}
-          {prediction && (
-            <Alert>
-              <AlertTitle className="font-headline">Next Watering: {format(parseISO(prediction.predictedWateringDate), 'MMMM d, yyyy')}</AlertTitle>
-              <AlertDescription>{prediction.reasoning}</AlertDescription>
-            </Alert>
-          )}
-        </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Close</Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
 
 const CareGuideDialog = ({ plant }: { plant: Plant }) => {
   const [careGuide, setCareGuide] = useState<GetPlantCareGuideOutput | null>(null);
@@ -224,7 +157,6 @@ export default function MyGardenView() {
                     <Droplets className="mr-2 h-4 w-4"/> Watered Today
                 </Button>
                 <CareGuideDialog plant={plant} />
-                <PredictionDialog plant={plant} />
               </CardContent>
             </div>
           </div>
