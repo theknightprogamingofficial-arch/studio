@@ -1,33 +1,17 @@
+
 'use server';
 
 /**
  * @fileOverview Generates a detailed care guide for a specific plant.
  *
  * - getPlantCareGuide - A function that returns a plant care guide.
- * - GetPlantCareGuideInput - The input type for the getPlantCareGuide function.
- * - GetPlantCareGuideOutput - The return type for the getPlantCareGuide function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'zod';
+import { GetPlantCareGuideInputSchema, GetPlantCareGuideOutputSchema, type GetPlantCareGuideInput } from '@/lib/types';
 
-const GetPlantCareGuideInputSchema = z.object({
-  plantName: z.string().describe('The common name of the plant.'),
-});
-export type GetPlantCareGuideInput = z.infer<typeof GetPlantCareGuideInputSchema>;
 
-const GetPlantCareGuideOutputSchema = z.object({
-  watering: z.string().describe('How often to water the plant.'),
-  sunlight: z.string().describe('The amount of sunlight the plant needs.'),
-  soil: z.string().describe('The type of soil the plant requires.'),
-  fertilizer: z.string().describe('The type and frequency of fertilizer the plant needs.'),
-  isIndoor: z.boolean().describe('Whether the plant is typically an indoor plant.'),
-  isOutdoor: z.boolean().describe('Whether the plant is typically an outdoor plant.'),
-  extraTips: z.string().describe('Any other important care tips for the plant.'),
-});
-export type GetPlantCareGuideOutput = z.infer<typeof GetPlantCareGuideOutputSchema>;
-
-export async function getPlantCareGuide(input: GetPlantCareGuideInput): Promise<GetPlantCareGuideOutput> {
+export async function getPlantCareGuide(input: GetPlantCareGuideInput) {
   return getPlantCareGuideFlow(input);
 }
 

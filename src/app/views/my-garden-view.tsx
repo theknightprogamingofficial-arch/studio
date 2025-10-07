@@ -6,7 +6,7 @@ import { format, parseISO } from "date-fns";
 import { useGarden } from "@/hooks/use-garden.tsx";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getPlantCareGuide, type GetPlantCareGuideOutput } from "@/ai/flows/get-plant-care-guide";
+import { getPlantCareGuide } from "@/ai/flows/get-plant-care-guide";
 import { useState, useRef } from "react";
 import { Loader2, Trash2, Droplets, BookOpen, MoreVertical, Notebook, Camera, Sun, Wind, TestTube, Home, Sparkles } from "lucide-react";
 import {
@@ -28,7 +28,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
 import { Sprout } from 'lucide-react';
-import type { Plant, JournalEntry } from "@/lib/types";
+import type { Plant, JournalEntry, GetPlantCareGuideOutput } from "@/lib/types";
 
 const CareGuideDialog = ({ plant }: { plant: Plant }) => {
   const [careGuide, setCareGuide] = useState<GetPlantCareGuideOutput | null>(null);

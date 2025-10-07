@@ -4,8 +4,8 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Camera, Loader2, Sparkles, CheckCircle, BookOpen, Droplets, Sun, Wind, TestTube, Home } from "lucide-react";
-import { identifyPlantFromImage, type IdentifyPlantFromImageOutput } from "@/ai/flows/identify-plant-from-image";
-import { getPlantCareGuide, type GetPlantCareGuideOutput } from "@/ai/flows/get-plant-care-guide";
+import { identifyPlantFromImage } from "@/ai/flows/identify-plant-from-image";
+import { getPlantCareGuide } from "@/ai/flows/get-plant-care-guide";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGarden } from "@/hooks/use-garden.tsx";
@@ -21,6 +21,8 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import type { IdentifyPlantFromImageOutput, GetPlantCareGuideOutput } from "@/lib/types";
+
 
 export default function IdentifyPlantView() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);

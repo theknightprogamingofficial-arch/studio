@@ -1,50 +1,57 @@
+
 'use server';
 
 /**
  * @fileOverview A conversational AI for diagnosing plant problems and providing care advice.
  *
  * - diagnosePlantProblems - A function that handles the plant diagnosis process.
- * - DiagnosePlantProblemsInput - The input type for the diagnosePlantProblems function.
- * - DiagnosePlantProblemsOutput - The return type for the diagnosePlantProblems function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'zod';
+import { DiagnoseLogMessageSchema, DiagnosePlantProblemsInputSchema, DiagnosePlantProblemsOutputSchema, type DiagnosePlantProblemsInput } from '@/lib/types';
 
-const DiagnosePlantProblemsInputSchema = z.object({
-  plantName: z.string().describe('The common name of the plant.'),
-  problemDescription: z.string().describe('A detailed description of the plant’s problems.'),
-  careGuide: z.string().optional().describe('Care guide for the plant if available.'),
-});
-export type DiagnosePlantProblemsInput = z.infer<typeof DiagnosePlantProblemsInputSchema>;
-
-const DiagnosePlantProblemsOutputSchema = z.object({
-  diagnosis: z.string().describe('A detailed diagnosis of the plant’s problems and care advice.'),
-});
-export type DiagnosePlantProblemsOutput = z.infer<typeof DiagnosePlantProblemsOutputSchema>;
-
-export async function diagnosePlantProblems(input: DiagnosePlantProblemsInput): Promise<DiagnosePlantProblemsOutput> {
+export async function diagnosePlantProblems(input: DiagnosePlantProblemsInput) {
   return diagnosePlantProblemsFlow(input);
 }
 
 const prompt = ai.definePrompt({
   name: 'diagnosePlantProblemsPrompt',
   input: {schema: DiagnosePlantProblemsInputSchema},
-  output: {schema: DiagnosePlantProblemsOutputSchema},
-  prompt: `You are an expert botanist specializing in diagnosing plant illnesses.  A user has described a problem with their plant.
+  output: {schema: DiagnoseLogMessageSchema},
+  prompt: `You are an expert botanist specializing in diagnosing plant illnesses. A user is asking for help with their plant. Engage in a conversation to help them identify and solve the issue.
 
   Plant name: {{{plantName}}}
-  Problem description: {{{problemDescription}}}
+  {{#if careGuide}}
   Care Guide: {{{careGuide}}}
+  {{/if}}
 
-  Based on the information provided, provide a detailed diagnosis of the plant’s problems and tailored care advice. Be conversational.`, // Changed prompt to be conversational
+  Conversation History:
+  {{#each chatHistory}}
+  {{#if (eq role 'user')}}User: {{content}}{{/if}}
+  {{#if (eq role 'model')}}AI: {{content}}{{/if}}
+  {{/each}}
+  
+  User's latest message: {{{problemDescription}}}
+
+  Based on the entire conversation, provide a helpful and conversational response. If you have enough information, offer a diagnosis and care advice. If not, ask clarifying questions.`,
 });
 
 const diagnosePlantProblemsFlow = ai.defineFlow({
   name: 'diagnosePlantProblemsFlow',
   inputSchema: DiagnosePlantProblemsInputSchema,
   outputSchema: DiagnosePlantProblemsOutputSchema,
-}, async input => {
-  const {output} = await prompt(input);
-  return output!;
+}, async (input) => {
+  const llmResponse = await prompt.generate({
+    input: input,
+    history: input.chatHistory.map(m => ({
+      role: m.role,
+      content: [{ text: m.content }],
+    })),
+  });
+
+  const output = llmResponse.output();
+  if (!output) {
+    throw new Error("The model did not return a response.");
+  }
+  return output;
 });
