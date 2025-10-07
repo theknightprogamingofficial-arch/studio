@@ -183,7 +183,16 @@ const JournalDialog = ({ plant }: { plant: Plant }) => {
                         <CardContent className="pt-4">
                             <p className="text-sm text-muted-foreground mb-2">{format(parseISO(entry.date), "MMM d, yyyy 'at' h:mm a")}</p>
                             {entry.note && <p className="mb-2">{entry.note}</p>}
-                            {entry.photoDataUri && <Image src={entry.photoDataUri} alt="Journal entry" width={100} height={100} className="rounded-md object-cover" />}
+                            {entry.photoDataUri && (
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Image src={entry.photoDataUri} alt="Journal entry" width={100} height={100} className="rounded-md object-cover cursor-pointer" />
+                                    </DialogTrigger>
+                                    <DialogContent className="p-0 border-0 max-w-screen-sm">
+                                        <Image src={entry.photoDataUri} alt="Journal entry" width={600} height={600} className="rounded-lg object-contain" />
+                                    </DialogContent>
+                                </Dialog>
+                            )}
                         </CardContent>
                     </Card>
                 ))
@@ -233,7 +242,14 @@ export default function MyGardenView() {
         <Card key={plant.id} className="overflow-hidden shadow-lg">
           <div className="flex">
             <div className="w-1/3 relative">
-              <Image src={plant.photoDataUri} alt={plant.commonName} layout="fill" objectFit="cover" />
+                <Dialog>
+                    <DialogTrigger className="w-full h-full">
+                        <Image src={plant.photoDataUri} alt={plant.commonName} layout="fill" objectFit="cover" />
+                    </DialogTrigger>
+                    <DialogContent className="p-0 border-0 max-w-screen-sm">
+                        <Image src={plant.photoDataUri} alt={plant.commonName} width={600} height={600} className="rounded-lg object-contain" />
+                    </DialogContent>
+                </Dialog>
             </div>
             <div className="w-2/3">
               <CardHeader className="flex flex-row items-start justify-between">
