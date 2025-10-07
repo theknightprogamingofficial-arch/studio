@@ -7,7 +7,7 @@ import { useGarden } from "@/hooks/use-garden.tsx";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getPlantCareGuide } from "@/ai/flows/get-plant-care-guide";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Loader2, Trash2, Droplets, BookOpen, MoreVertical, Notebook, Camera, Sun, Wind, TestTube, Home, Sparkles } from "lucide-react";
 import {
   Dialog,
@@ -36,9 +36,9 @@ const CareGuideDialog = ({ plant }: { plant: Plant }) => {
   const [error, setError] = useState<string | null>(null);
 
   const handleGetCareGuide = async () => {
+    if (isLoading || careGuide) return;
     setIsLoading(true);
     setError(null);
-    setCareGuide(null);
     try {
       const guide = await getPlantCareGuide({ plantName: plant.commonName });
       setCareGuide(guide);
@@ -50,8 +50,19 @@ const CareGuideDialog = ({ plant }: { plant: Plant }) => {
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      handleGetCareGuide();
+    } else {
+      // Reset state when closing
+      setCareGuide(null);
+      setIsLoading(false);
+      setError(null);
+    }
+  };
+
   return (
-    <Dialog onOpenChange={(open) => !open && setCareGuide(null)}>
+    <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="secondary" size="sm" className="w-full">
           <BookOpen className="mr-2 h-4 w-4" /> View Care Guide
@@ -62,11 +73,6 @@ const CareGuideDialog = ({ plant }: { plant: Plant }) => {
           <DialogTitle className="font-headline text-2xl">{plant.commonName} Care Guide</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
-          {!careGuide && !isLoading && !error && (
-            <div className="text-center">
-                <Button onClick={handleGetCareGuide}>Generate Care Guide</Button>
-            </div>
-          )}
           {isLoading && (
               <div className="flex items-center justify-center p-6 space-x-2 text-muted-foreground">
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -188,7 +194,7 @@ const JournalDialog = ({ plant }: { plant: Plant }) => {
                 sortedJournalEntries.map(entry => (
                     <Card key={entry.id}>
                         <CardContent className="pt-4">
-                            <p className="text-sm text-muted-foreground mb-2">{format(parseISO(entry.date), "MMM d, yyyy, h:mm a")}</p>
+                            <p className="text-sm text-muted-foreground mb-2">{format(parseISO(entry.date), "d MMM, yyyy, h:mm a")}</p>
                             {entry.note && <p className="mb-2">{entry.note}</p>}
                             {entry.photoDataUri && (
                                 <Dialog>
@@ -302,6 +308,8 @@ export default function MyGardenView() {
     </div>
   );
 }
+
+    
 
     
 
