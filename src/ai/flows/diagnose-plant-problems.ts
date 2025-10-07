@@ -41,15 +41,14 @@ const diagnosePlantProblemsFlow = ai.defineFlow({
   inputSchema: DiagnosePlantProblemsInputSchema,
   outputSchema: DiagnosePlantProblemsOutputSchema,
 }, async (input) => {
-  const llmResponse = await prompt.generate({
-    input: input,
+  const llmResponse = await prompt(input, {
     history: input.chatHistory.map(m => ({
       role: m.role,
       content: [{ text: m.content }],
     })),
   });
 
-  const output = llmResponse.output();
+  const output = llmResponse.output;
   if (!output) {
     throw new Error("The model did not return a response.");
   }
