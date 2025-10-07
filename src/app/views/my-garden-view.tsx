@@ -7,17 +7,22 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { getPlantCareGuide, type GetPlantCareGuideOutput } from "@/ai/flows/get-plant-care-guide";
 import { useState } from "react";
-import { Loader2, Trash2, Droplets, BookOpen } from "lucide-react";
+import { Loader2, Trash2, Droplets, BookOpen, MoreVertical } from "lucide-react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Sprout } from 'lucide-react';
 import type { Plant } from "@/lib/types";
@@ -144,13 +149,28 @@ export default function MyGardenView() {
               <Image src={plant.photoDataUri} alt={plant.commonName} layout="fill" objectFit="cover" />
             </div>
             <div className="w-2/3">
-              <CardHeader>
-                <CardTitle className="font-headline text-xl">{plant.commonName}</CardTitle>
-                <CardDescription>
-                  {plant.lastWateringDate
-                    ? `Last watered: ${format(parseISO(plant.lastWateringDate), 'MMM d, yyyy')}`
-                    : 'Not watered yet'}
-                </CardDescription>
+              <CardHeader className="flex flex-row items-start justify-between">
+                <div>
+                  <CardTitle className="font-headline text-xl">{plant.commonName}</CardTitle>
+                  <CardDescription>
+                    {plant.lastWateringDate
+                      ? `Last watered: ${format(parseISO(plant.lastWateringDate), 'MMM d, yyyy')}`
+                      : 'Not watered yet'}
+                  </CardDescription>
+                </div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => removePlant(plant.id)} className="text-destructive">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
               </CardHeader>
               <CardContent className="space-y-2">
                 <Button size="sm" onClick={() => handleWaterPlant(plant.id)} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
@@ -160,11 +180,6 @@ export default function MyGardenView() {
               </CardContent>
             </div>
           </div>
-          <CardFooter className="p-0">
-             <Button variant="ghost" size="sm" onClick={() => removePlant(plant.id)} className="w-full rounded-t-none text-destructive hover:bg-destructive/10 hover:text-destructive">
-                <Trash2 className="h-4 w-4" />
-             </Button>
-          </CardFooter>
         </Card>
       ))}
     </div>
