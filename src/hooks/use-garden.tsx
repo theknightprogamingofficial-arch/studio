@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, createContext, useContext, type ReactNode, type FC } from 'react';
-import type { Plant, IdentifiedPlant, AppContextType } from '@/lib/types';
+import type { Plant, IdentifiedPlant, AppContextType, JournalEntry } from '@/lib/types';
 
 const GARDEN_STORAGE_KEY = 'leafwise-garden';
 
@@ -35,7 +35,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, [garden, isInitialized]);
 
   const addPlant = useCallback((plant: Omit<Plant, 'id'>) => {
-    const newPlant: Plant = { ...plant, id: new Date().toISOString() };
+    const newPlant: Plant = { ...plant, id: new Date().toISOString(), journalEntries: [] };
     setGarden(prevGarden => [...prevGarden, newPlant]);
   }, []);
 
@@ -47,11 +47,29 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     setGarden(prevGarden => prevGarden.filter(p => p.id !== plantId));
   }, []);
 
+  const addJournalEntry = useCallback((plantId: string, entry: Omit<JournalEntry, 'id' | 'date'>) => {
+    setGarden(prevGarden =>
+      prevGarden.map(plant => {
+        if (plant.id === plantId) {
+          const newEntry: JournalEntry = {
+            ...entry,
+            id: new Date().toISOString(),
+            date: new Date().toISOString(),
+          };
+          const updatedEntries = [...(plant.journalEntries || []), newEntry];
+          return { ...plant, journalEntries: updatedEntries };
+        }
+        return plant;
+      })
+    );
+  }, []);
+
   const value = {
     garden,
     addPlant,
     updatePlant,
     removePlant,
+    addJournalEntry,
     isInitialized,
     identifiedPlant,
     setIdentifiedPlant,

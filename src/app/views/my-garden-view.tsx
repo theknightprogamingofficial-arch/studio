@@ -6,8 +6,8 @@ import { useGarden } from "@/hooks/use-garden.tsx";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getPlantCareGuide, type GetPlantCareGuideOutput } from "@/ai/flows/get-plant-care-guide";
-import { useState } from "react";
-import { Loader2, Trash2, Droplets, BookOpen, MoreVertical } from "lucide-react";
+import { useState, useRef } from "react";
+import { Loader2, Trash2, Droplets, BookOpen, MoreVertical, Notebook, Camera } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,7 @@ import {
   DialogTrigger,
   DialogFooter,
   DialogClose,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -24,8 +25,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Textarea } from "@/components/ui/textarea";
 import { Sprout } from 'lucide-react';
-import type { Plant } from "@/lib/types";
+import type { Plant, JournalEntry } from "@/lib/types";
 
 const CareGuideDialog = ({ plant }: { plant: Plant }) => {
   const [careGuide, setCareGuide] = useState<GetPlantCareGuideOutput | null>(null);
@@ -114,6 +116,91 @@ const CareGuideDialog = ({ plant }: { plant: Plant }) => {
   );
 };
 
+const JournalDialog = ({ plant }: { plant: Plant }) => {
+  const { addJournalEntry } = useGarden();
+  const [note, setNote] = useState("");
+  const [photo, setPhoto] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAddEntry = () => {
+    if (!note && !photo) return;
+    addJournalEntry(plant.id, {
+      note,
+      photoDataUri: photo || undefined,
+    });
+    setNote("");
+    setPhoto(null);
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhoto(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerFileSelect = () => fileInputRef.current?.click();
+
+  const sortedJournalEntries = plant.journalEntries?.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) || [];
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="secondary" size="sm" className="w-full">
+          <Notebook className="mr-2 h-4 w-4" /> Journal
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md w-full">
+        <DialogHeader>
+          <DialogTitle className="font-headline text-2xl">{plant.commonName} Journal</DialogTitle>
+          <DialogDescription>Add notes and photos to track your plant's progress.</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="space-y-2">
+            <Textarea
+              placeholder="Add a new note..."
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
+             <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
+            <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={triggerFileSelect}>
+                    <Camera className="mr-2 h-4 w-4" /> {photo ? "Change Photo" : "Add Photo"}
+                </Button>
+                {photo && <Image src={photo} alt="Note preview" width={40} height={40} className="rounded-md object-cover" />}
+            </div>
+          </div>
+          <Button onClick={handleAddEntry} disabled={!note && !photo}>Add Entry</Button>
+          <div className="max-h-[30vh] overflow-y-auto space-y-4 pr-2">
+            <h3 className="font-semibold">Activity Log</h3>
+            {sortedJournalEntries.length > 0 ? (
+                sortedJournalEntries.map(entry => (
+                    <Card key={entry.id}>
+                        <CardContent className="pt-4">
+                            <p className="text-sm text-muted-foreground mb-2">{format(parseISO(entry.date), "MMM d, yyyy 'at' h:mm a")}</p>
+                            {entry.note && <p className="mb-2">{entry.note}</p>}
+                            {entry.photoDataUri && <Image src={entry.photoDataUri} alt="Journal entry" width={100} height={100} className="rounded-md object-cover" />}
+                        </CardContent>
+                    </Card>
+                ))
+            ) : (
+                <p className="text-sm text-muted-foreground text-center">No journal entries yet.</p>
+            )}
+          </div>
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Close</Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 export default function MyGardenView() {
   const { garden, updatePlant, removePlant, isInitialized } = useGarden();
@@ -177,6 +264,7 @@ export default function MyGardenView() {
                     <Droplets className="mr-2 h-4 w-4"/> Watered Today
                 </Button>
                 <CareGuideDialog plant={plant} />
+                <JournalDialog plant={plant} />
               </CardContent>
             </div>
           </div>

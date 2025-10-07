@@ -1,3 +1,10 @@
+export type JournalEntry = {
+  id: string;
+  date: string;
+  note: string;
+  photoDataUri?: string;
+};
+
 export type Plant = {
   id: string;
   commonName: string;
@@ -5,15 +12,17 @@ export type Plant = {
   funFact: string;
   photoDataUri: string;
   lastWateringDate?: string;
+  journalEntries?: JournalEntry[];
 };
 
-export type IdentifiedPlant = Omit<Plant, 'id' | 'lastWateringDate'>;
+export type IdentifiedPlant = Omit<Plant, 'id' | 'lastWateringDate' | 'journalEntries'>;
 
 export type AppContextType = {
   garden: Plant[];
   addPlant: (plant: Omit<Plant, 'id'>) => void;
   updatePlant: (updatedPlant: Plant) => void;
   removePlant: (plantId: string) => void;
+  addJournalEntry: (plantId: string, entry: Omit<JournalEntry, 'id' | 'date'>) => void;
   isInitialized: boolean;
   identifiedPlant: IdentifiedPlant | null;
   setIdentifiedPlant: (plant: IdentifiedPlant | null) => void;
