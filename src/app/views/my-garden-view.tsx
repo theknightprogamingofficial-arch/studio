@@ -143,6 +143,10 @@ const JournalDialog = ({ plant }: { plant: Plant }) => {
     });
     setNote("");
     setPhoto(null);
+    //
+    if(fileInputRef.current) {
+        fileInputRef.current.value = "";
+    }
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -208,12 +212,6 @@ const JournalDialog = ({ plant }: { plant: Plant }) => {
                                         <Image src={entry.photoDataUri} alt="Journal entry" width={600} height={600} className="rounded-lg object-contain" />
                                     </DialogContent>
                                 </Dialog>
-                            )}
-                             {!entry.photoDataUri && entry.note.includes("Photo added") && (
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <Camera className="h-4 w-4" />
-                                    <span>Photo added (not stored)</span>
-                                </div>
                             )}
                         </CardContent>
                     </Card>
