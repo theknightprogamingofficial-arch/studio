@@ -28,7 +28,7 @@ export default function Home() {
 
   return (
     <AppProvider>
-      <div className="flex flex-col h-screen w-full max-w-md mx-auto bg-background">
+      <div className="flex flex-col h-screen w-full max-w-md mx-auto bg-background/90 backdrop-blur-sm">
         <header className="p-4 flex items-center justify-between bg-card/80 backdrop-blur-sm border-b">
           <div className="flex items-center gap-2">
             <LeafWiseLogo className="h-8 w-8 text-primary" />
