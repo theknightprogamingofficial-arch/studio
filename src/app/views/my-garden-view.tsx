@@ -270,7 +270,7 @@ export default function MyGardenView() {
                   <CardTitle className="font-headline text-xl">{plant.commonName}</CardTitle>
                   <CardDescription>
                     {plant.lastWateringDate
-                      ? `Last watered: ${format(parseISO(plant.lastWateringDate), "MMM d, h:mm a")}`
+                      ? `Last watered: ${format(parseISO(plant.lastWateringDate), "d MMM, h:mm a")}`
                       : 'Not watered yet'}
                   </CardDescription>
                 </div>
@@ -302,5 +302,7 @@ export default function MyGardenView() {
     </div>
   );
 }
+
+    
 
     
