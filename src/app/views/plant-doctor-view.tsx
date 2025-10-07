@@ -15,26 +15,24 @@ import type { IdentifiedPlant } from "@/lib/types";
 
 
 export default function PlantDoctorView() {
-  const { garden, isInitialized, identifiedPlant } = useGarden();
+  const { garden, isInitialized, identifiedPlant, setIdentifiedPlant } = useGarden();
   const [selectedPlant, setSelectedPlant] = useState<string>("");
   const [problemDescription, setProblemDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [diagnosis, setDiagnosis] = useState<DiagnosePlantProblemsOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const activePlantForDiagnosis = identifiedPlant || (garden.find(p => p.id === selectedPlant));
+  const activePlantForDiagnosis = (selectedPlant === "identified" && identifiedPlant) || (garden.find(p => p.id === selectedPlant));
 
   useEffect(() => {
     if (identifiedPlant) {
-      // There's no ID for a newly identified plant that is not yet saved.
-      // We can use its name as a temporary selector, but it won't be in the `garden` array yet.
-      setSelectedPlant(identifiedPlant.commonName);
-    } else if (garden.length > 0) {
-      setSelectedPlant(garden[0].id)
-    } else {
-      setSelectedPlant("");
+      setSelectedPlant("identified");
+    } else if (garden.length > 0 && selectedPlant === 'identified') {
+        setSelectedPlant(garden[0]?.id || "");
+    } else if (garden.length > 0 && !garden.find(p => p.id === selectedPlant)) {
+        setSelectedPlant(garden[0]?.id || "");
     }
-  }, [identifiedPlant, garden]);
+  }, [identifiedPlant, garden, selectedPlant]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,6 +66,14 @@ export default function PlantDoctorView() {
       setIsLoading(false);
     }
   };
+  
+  const handleSelectChange = (value: string) => {
+    if (value !== 'identified') {
+        // When user selects a plant from the garden, we can clear the identifiedPlant from context
+        setIdentifiedPlant(null);
+    }
+    setSelectedPlant(value);
+  }
 
   if (!isInitialized) {
     return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -99,13 +105,13 @@ export default function PlantDoctorView() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="plant-select">Which plant is having issues?</Label>
-              <Select onValueChange={setSelectedPlant} value={selectedPlant} disabled={!!identifiedPlant && garden.length === 0}>
+              <Select onValueChange={handleSelectChange} value={selectedPlant}>
                 <SelectTrigger id="plant-select">
                   <SelectValue placeholder="Select a plant" />
                 </SelectTrigger>
                 <SelectContent>
                   {identifiedPlant && (
-                    <SelectItem key="identified" value={identifiedPlant.commonName}>{identifiedPlant.commonName} (Newly Identified)</SelectItem>
+                    <SelectItem key="identified" value="identified">{identifiedPlant.commonName} (Newly Identified)</SelectItem>
                   )}
                   {garden.map((plant) => (
                     <SelectItem key={plant.id} value={plant.id}>{plant.commonName}</SelectItem>
