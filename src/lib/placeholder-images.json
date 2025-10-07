@@ -1,3 +1,10 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "add-plant",
+      "description": "Illustration of a person adding a plant",
+      "imageUrl": "https://picsum.photos/seed/plant-add/600/400",
+      "imageHint": "illustration plant"
+    }
+  ]
 }
