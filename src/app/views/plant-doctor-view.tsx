@@ -22,15 +22,19 @@ export default function PlantDoctorView() {
   const [diagnosis, setDiagnosis] = useState<DiagnosePlantProblemsOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const activePlantForDiagnosis = identifiedPlant || (garden.find(p => p.commonName === selectedPlant));
+  const activePlantForDiagnosis = identifiedPlant || (garden.find(p => p.id === selectedPlant));
 
   useEffect(() => {
     if (identifiedPlant) {
+      // There's no ID for a newly identified plant that is not yet saved.
+      // We can use its name as a temporary selector, but it won't be in the `garden` array yet.
       setSelectedPlant(identifiedPlant.commonName);
+    } else if (garden.length > 0) {
+      setSelectedPlant(garden[0].id)
     } else {
       setSelectedPlant("");
     }
-  }, [identifiedPlant]);
+  }, [identifiedPlant, garden]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,9 +47,17 @@ export default function PlantDoctorView() {
     setError(null);
     setDiagnosis(null);
 
+    // Find the plant name to send to the AI flow.
+    const plantName = activePlantForDiagnosis?.commonName;
+    if (!plantName) {
+        setError("Could not find the selected plant.");
+        setIsLoading(false);
+        return;
+    }
+
     try {
       const result = await diagnosePlantProblems({
-        plantName: selectedPlant,
+        plantName: plantName,
         problemDescription,
       });
       setDiagnosis(result);
@@ -87,7 +99,7 @@ export default function PlantDoctorView() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="plant-select">Which plant is having issues?</Label>
-              <Select onValueChange={setSelectedPlant} value={selectedPlant} disabled={!!identifiedPlant}>
+              <Select onValueChange={setSelectedPlant} value={selectedPlant} disabled={!!identifiedPlant && garden.length === 0}>
                 <SelectTrigger id="plant-select">
                   <SelectValue placeholder="Select a plant" />
                 </SelectTrigger>
@@ -96,7 +108,7 @@ export default function PlantDoctorView() {
                     <SelectItem key="identified" value={identifiedPlant.commonName}>{identifiedPlant.commonName} (Newly Identified)</SelectItem>
                   )}
                   {garden.map((plant) => (
-                    <SelectItem key={plant.id} value={plant.commonName}>{plant.commonName}</SelectItem>
+                    <SelectItem key={plant.id} value={plant.id}>{plant.commonName}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -127,10 +139,10 @@ export default function PlantDoctorView() {
       
       {error && <p className="text-destructive text-center">{error}</p>}
       
-      {diagnosis && (
+      {diagnosis && activePlantForDiagnosis && (
         <Card className="shadow-md">
            <CardHeader>
-            <CardTitle className="font-headline flex items-center gap-2"><Sparkles className="text-accent" /> Diagnosis for {selectedPlant}</CardTitle>
+            <CardTitle className="font-headline flex items-center gap-2"><Sparkles className="text-accent" /> Diagnosis for {activePlantForDiagnosis.commonName}</CardTitle>
           </CardHeader>
           <CardContent>
             <Alert>
