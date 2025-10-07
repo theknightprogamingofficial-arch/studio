@@ -188,7 +188,7 @@ const JournalDialog = ({ plant }: { plant: Plant }) => {
                 sortedJournalEntries.map(entry => (
                     <Card key={entry.id}>
                         <CardContent className="pt-4">
-                            <p className="text-sm text-muted-foreground mb-2">{format(parseISO(entry.date), "MMM d, yyyy 'at' h:mm a")}</p>
+                            <p className="text-sm text-muted-foreground mb-2">{format(parseISO(entry.date), "MMM d, yyyy, h:mm a")}</p>
                             {entry.note && <p className="mb-2">{entry.note}</p>}
                             {entry.photoDataUri && (
                                 <Dialog>
@@ -270,7 +270,7 @@ export default function MyGardenView() {
                   <CardTitle className="font-headline text-xl">{plant.commonName}</CardTitle>
                   <CardDescription>
                     {plant.lastWateringDate
-                      ? `Last watered: ${format(parseISO(plant.lastWateringDate), "MMM d 'at' h:mm a")}`
+                      ? `Last watered: ${format(parseISO(plant.lastWateringDate), "MMM d, h:mm a")}`
                       : 'Not watered yet'}
                   </CardDescription>
                 </div>
