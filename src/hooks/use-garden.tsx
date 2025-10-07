@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback, createContext, useContext, type ReactNode, type FC } from 'react';
@@ -27,7 +28,15 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   useEffect(() => {
     if (isInitialized) {
       try {
-        localStorage.setItem(GARDEN_STORAGE_KEY, JSON.stringify(garden));
+        // Create a copy of the garden without journal photo data to save space
+        const gardenToStore = garden.map(plant => ({
+          ...plant,
+          journalEntries: plant.journalEntries?.map(entry => {
+            const { photoDataUri, ...rest } = entry;
+            return rest;
+          })
+        }));
+        localStorage.setItem(GARDEN_STORAGE_KEY, JSON.stringify(gardenToStore));
       } catch (error) {
         console.error("Failed to save garden to localStorage", error);
       }

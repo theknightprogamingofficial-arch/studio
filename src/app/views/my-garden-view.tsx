@@ -209,6 +209,12 @@ const JournalDialog = ({ plant }: { plant: Plant }) => {
                                     </DialogContent>
                                 </Dialog>
                             )}
+                             {!entry.photoDataUri && entry.note.includes("Photo added") && (
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <Camera className="h-4 w-4" />
+                                    <span>Photo added (not stored)</span>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 ))
@@ -308,9 +314,3 @@ export default function MyGardenView() {
     </div>
   );
 }
-
-    
-
-    
-
-    
