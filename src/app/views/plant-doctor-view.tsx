@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { diagnosePlantProblems, type DiagnosePlantProblemsOutput } from "@/ai/flows/diagnose-plant-problems";
 import { Loader2, Sparkles, Stethoscope } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import type { IdentifiedPlant } from "@/lib/types";
+import type { IdentifiedPlant, Plant } from "@/lib/types";
 
 
 export default function PlantDoctorView() {
@@ -22,7 +22,16 @@ export default function PlantDoctorView() {
   const [diagnosis, setDiagnosis] = useState<DiagnosePlantProblemsOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const activePlantForDiagnosis = (selectedPlant === "identified" && identifiedPlant) || (garden.find(p => p.id === selectedPlant));
+  const [activePlantForDiagnosis, setActivePlantForDiagnosis] = useState<Plant | IdentifiedPlant | undefined>();
+
+  useEffect(() => {
+    if (selectedPlant === "identified" && identifiedPlant) {
+      setActivePlantForDiagnosis(identifiedPlant);
+    } else {
+      setActivePlantForDiagnosis(garden.find(p => p.id === selectedPlant));
+    }
+  }, [selectedPlant, identifiedPlant, garden]);
+
 
   useEffect(() => {
     if (identifiedPlant) {
