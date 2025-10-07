@@ -111,22 +111,29 @@ export default function PlantDoctorView() {
           <CardDescription>Chat with an AI expert about your plant's problems.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-              <Label htmlFor="plant-select">Which plant are we talking about?</Label>
-              <Select onValueChange={handleSelectChange} value={selectedPlant}>
-                <SelectTrigger id="plant-select">
-                  <SelectValue placeholder="Select a plant" />
-                </SelectTrigger>
-                <SelectContent>
-                  {identifiedPlant && (
-                    <SelectItem key="identified" value="identified">{identifiedPlant.commonName} (Newly Identified)</SelectItem>
-                  )}
-                  {garden.map((plant) => (
-                    <SelectItem key={plant.id} value={plant.id}>{plant.commonName}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="flex items-center gap-4">
+              {activePlantForDiagnosis && (
+                <div className="w-24 h-24 relative flex-shrink-0">
+                  <Image src={activePlantForDiagnosis.photoDataUri} alt={activePlantForDiagnosis.commonName} layout="fill" className="rounded-md object-cover" />
+                </div>
+              )}
+              <div className="space-y-2 flex-grow">
+                <Label htmlFor="plant-select">Which plant are we talking about?</Label>
+                <Select onValueChange={handleSelectChange} value={selectedPlant}>
+                  <SelectTrigger id="plant-select">
+                    <SelectValue placeholder="Select a plant" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {identifiedPlant && (
+                      <SelectItem key="identified" value="identified">{identifiedPlant.commonName} (Newly Identified)</SelectItem>
+                    )}
+                    {garden.map((plant) => (
+                      <SelectItem key={plant.id} value={plant.id}>{plant.commonName}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+          </div>
         </CardContent>
       </Card>
       
