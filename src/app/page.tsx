@@ -73,7 +73,7 @@ export default function Home() {
             </div>
           </header>
 
-          <main className="flex-grow overflow-y-auto p-4 pb-24">
+          <main className="flex-grow overflow-y-auto p-4 pb-20">
             {renderView()}
           </main>
 
