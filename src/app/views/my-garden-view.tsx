@@ -189,6 +189,9 @@ const JournalDialog = ({ plant }: { plant: Plant }) => {
                                         <Image src={entry.photoDataUri} alt="Journal entry" width={100} height={100} className="rounded-md object-cover cursor-pointer" />
                                     </DialogTrigger>
                                     <DialogContent className="p-0 border-0 max-w-screen-sm">
+                                        <DialogHeader className="p-4 absolute top-0 left-0 bg-gradient-to-b from-black/50 to-transparent w-full rounded-t-lg">
+                                            <DialogTitle className="text-white font-headline">Journal Photo from {format(parseISO(entry.date), "MMM d, yyyy")}</DialogTitle>
+                                        </DialogHeader>
                                         <Image src={entry.photoDataUri} alt="Journal entry" width={600} height={600} className="rounded-lg object-contain" />
                                     </DialogContent>
                                 </Dialog>
@@ -247,6 +250,9 @@ export default function MyGardenView() {
                         <Image src={plant.photoDataUri} alt={plant.commonName} layout="fill" objectFit="cover" />
                     </DialogTrigger>
                     <DialogContent className="p-0 border-0 max-w-screen-sm">
+                        <DialogHeader className="p-4 absolute top-0 left-0 bg-gradient-to-b from-black/50 to-transparent w-full rounded-t-lg">
+                            <DialogTitle className="text-white font-headline">{plant.commonName}</DialogTitle>
+                        </DialogHeader>
                         <Image src={plant.photoDataUri} alt={plant.commonName} width={600} height={600} className="rounded-lg object-contain" />
                     </DialogContent>
                 </Dialog>
