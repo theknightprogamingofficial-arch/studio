@@ -9,8 +9,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGarden } from "@/hooks/use-garden";
 import { useToast } from "@/hooks/use-toast";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 export default function IdentifyPlantView() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -150,26 +159,28 @@ export default function IdentifyPlantView() {
                     <Sparkles className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
                     <p><span className="font-bold">Fun Fact:</span> {result.funFact}</p>
                   </div>
-                   <Button onClick={handleGetCareGuide} disabled={isLoadingCareGuide} className="w-full">
-                    {isLoadingCareGuide ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Generating Guide...
-                      </>
-                    ) : (
-                      <>
-                       <BookOpen className="mr-2 h-4 w-4"/>
-                        Get Care Guide
-                      </>
-                    )}
-                  </Button>
-                </CardContent>
-                {careGuide && (
-                  <CardContent>
-                    <Accordion type="single" collapsible defaultValue="item-1">
-                      <AccordionItem value="item-1">
-                        <AccordionTrigger className="font-headline text-lg">Care Guide</AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-2">
+                   <Dialog>
+                    <DialogTrigger asChild>
+                      <Button onClick={handleGetCareGuide} disabled={isLoadingCareGuide} className="w-full">
+                        {isLoadingCareGuide ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Generating Guide...
+                          </>
+                        ) : (
+                          <>
+                          <BookOpen className="mr-2 h-4 w-4"/>
+                            Get Care Guide
+                          </>
+                        )}
+                      </Button>
+                    </DialogTrigger>
+                    {careGuide && (
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle className="font-headline text-2xl">{result.commonName} Care Guide</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
                            <Alert>
                               <AlertTitle>Watering</AlertTitle>
                               <AlertDescription>{careGuide.watering}</AlertDescription>
@@ -198,11 +209,16 @@ export default function IdentifyPlantView() {
                               <AlertTitle>Extra Tips</AlertTitle>
                               <AlertDescription>{careGuide.extraTips}</AlertDescription>
                           </Alert>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </CardContent>
-                )}
+                        </div>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button variant="outline">Close</Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    )}
+                   </Dialog>
+                </CardContent>
                 <CardFooter className="flex-col gap-2">
                   <Button onClick={handleSaveToGarden} disabled={isSaved} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
                     {isSaved ? (
