@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { getPlantCareGuide } from "@/ai/flows/get-plant-care-guide";
 import { useState, useRef, useEffect } from "react";
-import { Loader2, Trash2, Droplets, BookOpen, MoreVertical, Notebook, Camera, Sun, Wind, TestTube, Home, Sparkles } from "lucide-react";
+import { Loader2, Trash2, Droplets, BookOpen, MoreVertical, Notebook, Camera, Sun, Layers, Home, Sparkles } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -93,12 +93,12 @@ const CareGuideDialog = ({ plant }: { plant: Plant }) => {
                   <AlertDescription>{careGuide.sunlight}</AlertDescription>
               </Alert>
               <Alert>
-                  <Wind className="h-4 w-4" />
+                  <Layers className="h-4 w-4" />
                   <AlertTitle>Soil</AlertTitle>
                   <AlertDescription>{careGuide.soil}</AlertDescription>
               </Alert>
               <Alert>
-                  <TestTube className="h-4 w-4" />
+                  <Sprout className="h-4 w-4" />
                   <AlertTitle>Fertilizer</AlertTitle>
                   <AlertDescription>{careGuide.fertilizer}</AlertDescription>
               </Alert>

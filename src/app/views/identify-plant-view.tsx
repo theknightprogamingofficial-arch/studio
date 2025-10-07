@@ -3,7 +3,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { Camera, Loader2, Sparkles, CheckCircle, BookOpen, Droplets, Sun, Wind, TestTube, Home } from "lucide-react";
+import { Camera, Loader2, Sparkles, CheckCircle, BookOpen, Droplets, Sun, Layers, Sprout, Home } from "lucide-react";
 import { identifyPlantFromImage } from "@/ai/flows/identify-plant-from-image";
 import { getPlantCareGuide } from "@/ai/flows/get-plant-care-guide";
 import { Button } from "@/components/ui/button";
@@ -212,12 +212,12 @@ export default function IdentifyPlantView() {
                               <AlertDescription>{careGuide.sunlight}</AlertDescription>
                           </Alert>
                            <Alert>
-                              <Wind className="h-4 w-4" />
+                              <Layers className="h-4 w-4" />
                               <AlertTitle>Soil</AlertTitle>
                               <AlertDescription>{careGuide.soil}</AlertDescription>
                           </Alert>
                            <Alert>
-                              <TestTube className="h-4 w-4" />
+                              <Sprout className="h-4 w-4" />
                               <AlertTitle>Fertilizer</AlertTitle>
                               <AlertDescription>{careGuide.fertilizer}</AlertDescription>
                           </Alert>
