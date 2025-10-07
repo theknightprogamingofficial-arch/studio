@@ -10,11 +10,13 @@ import { LeafWiseLogo } from "@/components/icons";
 import { AppProvider } from "@/hooks/use-garden.tsx";
 import { Code } from "lucide-react";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export type View = "identify" | "garden" | "doctor";
 
@@ -36,7 +38,6 @@ export default function Home() {
 
   return (
     <AppProvider>
-      <TooltipProvider>
         <div className="flex flex-col h-screen w-full max-w-md mx-auto bg-background/90 backdrop-blur-sm">
           <header className="p-4 flex items-center justify-between bg-card/80 backdrop-blur-sm border-b">
             <div className="flex items-center gap-2">
@@ -47,22 +48,19 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2">
               <p className="text-xs text-muted-foreground">By CodeCrafters</p>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                    }}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                  >
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
                     <Code className="h-5 w-5" />
-                  </a>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <div className="p-1">
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>About This App</DialogTitle>
+                  </DialogHeader>
+                  <div className="py-2">
                     <h3 className="font-bold mb-1">Developed By</h3>
-                    <ul className="list-disc list-inside text-sm">
+                    <ul className="list-disc list-inside text-sm mb-4">
                       <li>Sahil Jagtap</li>
                       <li>Omkar Gawali</li>
                       <li>Adarsh Salunkhe</li>
@@ -70,8 +68,8 @@ export default function Home() {
                     <h3 className="font-bold mt-2 mb-1">Guided By</h3>
                     <p className="text-sm">Yashanjali Sisodia</p>
                   </div>
-                </TooltipContent>
-              </Tooltip>
+                </DialogContent>
+              </Dialog>
             </div>
           </header>
 
@@ -81,7 +79,6 @@ export default function Home() {
 
           <BottomNav activeView={activeView} setActiveView={setActiveView} />
         </div>
-      </TooltipProvider>
     </AppProvider>
   );
 }
