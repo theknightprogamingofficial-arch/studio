@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { diagnosePlantProblems } from "@/ai/flows/diagnose-plant-problems";
+import { plantChat } from "@/ai/flows/plant-chat-flow";
 import { Loader2, Send, Stethoscope, User, Bot } from "lucide-react";
 import type { IdentifiedPlant, Plant } from "@/lib/types";
 
@@ -65,15 +65,15 @@ export default function PlantDoctorView() {
     setIsLoading(true);
 
     try {
-      const result = await diagnosePlantProblems({
+      const result = await plantChat({
         plantName: activePlantForDiagnosis.commonName,
-        problemDescription: userInput,
+        userQuestion: userInput,
         chatHistory: chatHistory,
       });
-      const modelMessage: ChatMessage = { role: 'model', content: result.diagnosis };
+      const modelMessage: ChatMessage = { role: 'model', content: result.response };
       setChatHistory(prev => [...prev, modelMessage]);
     } catch (e) {
-      const errorMessage: ChatMessage = { role: 'model', content: "Sorry, the Plant Doctor is having trouble responding. Please try again." };
+      const errorMessage: ChatMessage = { role: 'model', content: "Sorry, the Plant Expert is having trouble responding. Please try again." };
       setChatHistory(prev => [...prev, errorMessage]);
       console.error(e);
     } finally {
@@ -98,7 +98,7 @@ export default function PlantDoctorView() {
        <div className="text-center flex flex-col items-center justify-center h-full text-muted-foreground">
         <Stethoscope className="w-24 h-24 mb-4 text-primary/50" />
         <h2 className="font-headline text-2xl font-semibold text-foreground">Identify or Add a Plant First</h2>
-        <p>You need a plant to use the Plant Doctor.</p>
+        <p>You need a plant to use the Plant Expert.</p>
       </div>
     );
   }
@@ -107,8 +107,8 @@ export default function PlantDoctorView() {
     <div className="flex flex-col h-full">
       <Card className="shadow-lg flex-shrink-0">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl flex items-center gap-2"><Stethoscope className="text-primary"/>Plant Doctor</CardTitle>
-          <CardDescription>Chat with an AI expert about your plant's problems.</CardDescription>
+          <CardTitle className="font-headline text-2xl flex items-center gap-2"><Stethoscope className="text-primary"/>Plant Expert</CardTitle>
+          <CardDescription>Chat with an AI expert about your plant.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
@@ -141,7 +141,7 @@ export default function PlantDoctorView() {
         {activePlantForDiagnosis && chatHistory.length === 0 && (
              <div className="text-center text-muted-foreground p-4">
                 <Bot className="mx-auto h-8 w-8 mb-2" />
-                <p>Hello! I'm the LeafWise Plant Doctor. How can I help with your {activePlantForDiagnosis.commonName} today?</p>
+                <p>Hello! I'm your LeafWise Plant Expert. How can I help with your {activePlantForDiagnosis.commonName} today?</p>
              </div>
         )}
         {chatHistory.map((message, index) => (

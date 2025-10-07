@@ -66,26 +66,26 @@ export const GetPlantCareGuideOutputSchema = z.object({
 export type GetPlantCareGuideOutput = z.infer<typeof GetPlantCareGuideOutputSchema>;
 
 
-// Schemas for diagnose-plant-problems.ts
+// Schemas for plant-chat-flow.ts
 const ChatMessageSchema = z.object({
   role: z.enum(['user', 'model']),
   content: z.string(),
 });
 
-export const DiagnosePlantProblemsInputSchema = z.object({
+export const PlantChatInputSchema = z.object({
   plantName: z.string().describe('The common name of the plant.'),
   chatHistory: z.array(ChatMessageSchema).describe('The conversation history.'),
-  problemDescription: z.string().describe('The user\'s latest message describing the plant’s problems.'),
+  userQuestion: z.string().describe('The user\'s latest question about the plant.'),
   careGuide: z.string().optional().describe('Care guide for the plant if available.'),
 });
-export type DiagnosePlantProblemsInput = z.infer<typeof DiagnosePlantProblemsInputSchema>;
+export type PlantChatInput = z.infer<typeof PlantChatInputSchema>;
 
-export const DiagnosePlantProblemsOutputSchema = z.object({
-  diagnosis: z.string().describe('A detailed diagnosis of the plant’s problems and care advice.'),
+export const PlantChatOutputSchema = z.object({
+  response: z.string().describe('A detailed, conversational response to the user\'s question.'),
 });
-export type DiagnosePlantProblemsOutput = z.infer<typeof DiagnosePlantProblemsOutputSchema>;
+export type PlantChatOutput = z.infer<typeof PlantChatOutputSchema>;
 
-// A Zod schema for the log message.
-export const DiagnoseLogMessageSchema = z.object({
-  diagnosis: z.string().describe('A detailed diagnosis of the plant’s problems and care advice.'),
+// A Zod schema for the chat message.
+export const PlantChatMessageSchema = z.object({
+  response: z.string().describe('A detailed, conversational response to the user\'s question.'),
 });
