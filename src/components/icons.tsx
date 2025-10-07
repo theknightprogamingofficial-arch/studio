@@ -1,21 +1,19 @@
+
 import type { SVGProps } from "react";
 
 export function LeafWiseLogo(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
       {...props}
     >
-      <path d="M12 22c-5 0-9-4.5-9-10 0-5.5 4-10 9-10s9 4.5 9 10" />
-      <path d="M12 2a7 7 0 0 0-7 7c0 3.9 3.1 7 7 7s7-3.1 7-7" />
+      <path
+        fillRule="evenodd"
+        d="M11.248 4.22c-.28.163-.534.364-.768.595C7.942 7.32 7.23 10.363 9.403 12.536c1.23 1.23 2.872 1.83 4.502 1.83.18 0 .36-.012.537-.035a1.5 1.5 0 0 1 1.165 2.083 9.752 9.752 0 0 1-5.63 4.393c-.93.36-1.923.46-2.924.26-1.294-.26-2.51-.94-3.49-1.92-2.33-2.33-2.33-6.143 0-8.473.98-.98 2.196-1.66 3.49-1.92.547-.1 1.103-.13 1.656-.1a1.5 1.5 0 0 1-1.252-2.348c.32-.533.72-1.018 1.173-1.44a1.5 1.5 0 0 1 2.228.468ZM14.604 11.23a3.542 3.542 0 0 0-3.37-3.37 1.5 1.5 0 1 1 3.37 3.37Z"
+        clipRule="evenodd"
+      />
     </svg>
   );
 }
