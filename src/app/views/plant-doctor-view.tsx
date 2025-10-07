@@ -28,7 +28,8 @@ export default function PlantDoctorView() {
     if (selectedPlant === "identified" && identifiedPlant) {
       setActivePlantForDiagnosis(identifiedPlant);
     } else {
-      setActivePlantForDiagnosis(garden.find(p => p.id === selectedPlant));
+      const foundPlant = Array.isArray(garden) ? garden.find(p => p.id === selectedPlant) : undefined;
+      setActivePlantForDiagnosis(foundPlant);
     }
   }, [selectedPlant, identifiedPlant, garden]);
 
