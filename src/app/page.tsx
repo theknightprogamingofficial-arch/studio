@@ -53,7 +53,6 @@ export default function Home() {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      alert("Crafted with AI by CodeCrafters!");
                     }}
                     className="text-muted-foreground hover:text-foreground transition-colors"
                   >
@@ -61,7 +60,16 @@ export default function Home() {
                   </a>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Learn more about CodeCrafters</p>
+                  <div className="p-1">
+                    <h3 className="font-bold mb-1">Developed By</h3>
+                    <ul className="list-disc list-inside text-sm">
+                      <li>Sahil Jagtap</li>
+                      <li>Omkar Gawali</li>
+                      <li>Adarsh Salunkhe</li>
+                    </ul>
+                    <h3 className="font-bold mt-2 mb-1">Guided By</h3>
+                    <p className="text-sm">Yashanjali Sisodia</p>
+                  </div>
                 </TooltipContent>
               </Tooltip>
             </div>
