@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Dispatch, SetStateAction } from "react";
@@ -20,7 +21,7 @@ const navItems: { view: View; icon: React.ElementType; label: string }[] = [
 
 export default function BottomNav({ activeView, setActiveView }: BottomNavProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-16 bg-card border-t max-w-md mx-auto rounded-t-lg overflow-hidden">
+    <div className="fixed bottom-0 left-0 right-0 h-16 bg-card border-t max-w-md mx-auto rounded-t-lg overflow-hidden z-50">
       <div className="flex justify-around items-center h-full">
         {navItems.map((item) => (
           <Button
