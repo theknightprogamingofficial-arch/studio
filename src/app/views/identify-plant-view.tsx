@@ -1,8 +1,9 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { Camera, Loader2, Sparkles, CheckCircle, BookOpen } from "lucide-react";
+import { Camera, Loader2, Sparkles, CheckCircle, BookOpen, Droplets, Sun, Wind, TestTube, Home } from "lucide-react";
 import { identifyPlantFromImage, type IdentifyPlantFromImageOutput } from "@/ai/flows/identify-plant-from-image";
 import { getPlantCareGuide, type GetPlantCareGuideOutput } from "@/ai/flows/get-plant-care-guide";
 import { Button } from "@/components/ui/button";
@@ -199,22 +200,27 @@ export default function IdentifyPlantView() {
                         </DialogHeader>
                         <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
                            <Alert>
+                              <Droplets className="h-4 w-4" />
                               <AlertTitle>Watering</AlertTitle>
                               <AlertDescription>{careGuide.watering}</AlertDescription>
                           </Alert>
                            <Alert>
+                              <Sun className="h-4 w-4" />
                               <AlertTitle>Sunlight</AlertTitle>
                               <AlertDescription>{careGuide.sunlight}</AlertDescription>
                           </Alert>
                            <Alert>
+                              <Wind className="h-4 w-4" />
                               <AlertTitle>Soil</AlertTitle>
                               <AlertDescription>{careGuide.soil}</AlertDescription>
                           </Alert>
                            <Alert>
+                              <TestTube className="h-4 w-4" />
                               <AlertTitle>Fertilizer</AlertTitle>
                               <AlertDescription>{careGuide.fertilizer}</AlertDescription>
                           </Alert>
                            <Alert>
+                              <Home className="h-4 w-4" />
                               <AlertTitle>Placement</AlertTitle>
                               <AlertDescription>
                                 {careGuide.isIndoor && careGuide.isOutdoor ? "Suitable for both indoor and outdoor environments." :
@@ -223,6 +229,7 @@ export default function IdentifyPlantView() {
                               </AlertDescription>
                           </Alert>
                           <Alert>
+                              <Sparkles className="h-4 w-4" />
                               <AlertTitle>Extra Tips</AlertTitle>
                               <AlertDescription>{careGuide.extraTips}</AlertDescription>
                           </Alert>

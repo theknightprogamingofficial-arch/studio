@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -7,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { getPlantCareGuide, type GetPlantCareGuideOutput } from "@/ai/flows/get-plant-care-guide";
 import { useState, useRef } from "react";
-import { Loader2, Trash2, Droplets, BookOpen, MoreVertical, Notebook, Camera } from "lucide-react";
+import { Loader2, Trash2, Droplets, BookOpen, MoreVertical, Notebook, Camera, Sun, Wind, TestTube, Home, Sparkles } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -76,22 +77,27 @@ const CareGuideDialog = ({ plant }: { plant: Plant }) => {
           {careGuide && (
             <div className="space-y-2">
               <Alert>
+                  <Droplets className="h-4 w-4" />
                   <AlertTitle>Watering</AlertTitle>
                   <AlertDescription>{careGuide.watering}</AlertDescription>
               </Alert>
               <Alert>
+                  <Sun className="h-4 w-4" />
                   <AlertTitle>Sunlight</AlertTitle>
                   <AlertDescription>{careGuide.sunlight}</AlertDescription>
               </Alert>
               <Alert>
+                  <Wind className="h-4 w-4" />
                   <AlertTitle>Soil</AlertTitle>
                   <AlertDescription>{careGuide.soil}</AlertDescription>
               </Alert>
               <Alert>
+                  <TestTube className="h-4 w-4" />
                   <AlertTitle>Fertilizer</AlertTitle>
                   <AlertDescription>{careGuide.fertilizer}</AlertDescription>
               </Alert>
               <Alert>
+                  <Home className="h-4 w-4" />
                   <AlertTitle>Placement</AlertTitle>
                   <AlertDescription>
                     {careGuide.isIndoor && careGuide.isOutdoor ? "Suitable for both indoor and outdoor environments." :
@@ -100,6 +106,7 @@ const CareGuideDialog = ({ plant }: { plant: Plant }) => {
                   </AlertDescription>
               </Alert>
               <Alert>
+                  <Sparkles className="h-4 w-4" />
                   <AlertTitle>Extra Tips</AlertTitle>
                   <AlertDescription>{careGuide.extraTips}</AlertDescription>
               </Alert>
