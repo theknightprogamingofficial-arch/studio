@@ -6,8 +6,9 @@ import { useGarden } from "@/hooks/use-garden";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { predictWateringSchedule, type PredictWateringScheduleOutput } from "@/ai/flows/predict-watering-schedule";
+import { getPlantCareGuide, type GetPlantCareGuideOutput } from "@/ai/flows/get-plant-care-guide";
 import { useState } from "react";
-import { Loader2, Trash2, Droplets, BrainCircuit } from "lucide-react";
+import { Loader2, Trash2, Droplets, BrainCircuit, BookOpen } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -20,9 +21,10 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Sprout } from 'lucide-react';
+import type { Plant } from "@/lib/types";
 
 
-const PredictionDialog = ({ plant }: { plant: import('@/lib/types').Plant }) => {
+const PredictionDialog = ({ plant }: { plant: Plant }) => {
   const [prediction, setPrediction] = useState<PredictWateringScheduleOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -87,6 +89,94 @@ const PredictionDialog = ({ plant }: { plant: import('@/lib/types').Plant }) => 
   );
 };
 
+const CareGuideDialog = ({ plant }: { plant: Plant }) => {
+  const [careGuide, setCareGuide] = useState<GetPlantCareGuideOutput | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleGetCareGuide = async () => {
+    setIsLoading(true);
+    setError(null);
+    setCareGuide(null);
+    try {
+      const guide = await getPlantCareGuide({ plantName: plant.commonName });
+      setCareGuide(guide);
+    } catch (e) {
+      setError("Sorry, I couldn't generate a care guide at this time.");
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Dialog onOpenChange={(open) => !open && setCareGuide(null)}>
+      <DialogTrigger asChild>
+        <Button variant="secondary" size="sm" className="w-full">
+          <BookOpen className="mr-2 h-4 w-4" /> View Care Guide
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="font-headline text-2xl">{plant.commonName} Care Guide</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
+          {!careGuide && !isLoading && !error && (
+            <div className="text-center">
+                <Button onClick={handleGetCareGuide}>Generate Care Guide</Button>
+            </div>
+          )}
+          {isLoading && (
+              <div className="flex items-center justify-center p-6 space-x-2 text-muted-foreground">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span>Generating Guide...</span>
+              </div>
+          )}
+          {error && <p className="text-destructive text-center">{error}</p>}
+          {careGuide && (
+            <div className="space-y-2">
+              <Alert>
+                  <AlertTitle>Watering</AlertTitle>
+                  <AlertDescription>{careGuide.watering}</AlertDescription>
+              </Alert>
+              <Alert>
+                  <AlertTitle>Sunlight</AlertTitle>
+                  <AlertDescription>{careGuide.sunlight}</AlertDescription>
+              </Alert>
+              <Alert>
+                  <AlertTitle>Soil</AlertTitle>
+                  <AlertDescription>{careGuide.soil}</AlertDescription>
+              </Alert>
+              <Alert>
+                  <AlertTitle>Fertilizer</AlertTitle>
+                  <AlertDescription>{careGuide.fertilizer}</AlertDescription>
+              </Alert>
+              <Alert>
+                  <AlertTitle>Placement</AlertTitle>
+                  <AlertDescription>
+                    {careGuide.isIndoor && careGuide.isOutdoor ? "Suitable for both indoor and outdoor environments." :
+                      careGuide.isIndoor ? "Best kept as an indoor plant." :
+                      careGuide.isOutdoor ? "Thrives as an outdoor plant." : "Placement information not available."}
+                  </AlertDescription>
+              </Alert>
+              <Alert>
+                  <AlertTitle>Extra Tips</AlertTitle>
+                  <AlertDescription>{careGuide.extraTips}</AlertDescription>
+              </Alert>
+            </div>
+          )}
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Close</Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+
 export default function MyGardenView() {
   const { garden, updatePlant, removePlant, isInitialized } = useGarden();
 
@@ -133,6 +223,7 @@ export default function MyGardenView() {
                 <Button size="sm" onClick={() => handleWaterPlant(plant.id)} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                     <Droplets className="mr-2 h-4 w-4"/> Watered Today
                 </Button>
+                <CareGuideDialog plant={plant} />
                 <PredictionDialog plant={plant} />
               </CardContent>
             </div>
