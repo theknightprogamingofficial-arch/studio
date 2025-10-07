@@ -2,17 +2,22 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { Camera, Loader2, Sparkles, CheckCircle } from "lucide-react";
+import { Camera, Loader2, Sparkles, CheckCircle, BookOpen } from "lucide-react";
 import { identifyPlantFromImage, type IdentifyPlantFromImageOutput } from "@/ai/flows/identify-plant-from-image";
+import { getPlantCareGuide, type GetPlantCareGuideOutput } from "@/ai/flows/get-plant-care-guide";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGarden } from "@/hooks/use-garden";
 import { useToast } from "@/hooks/use-toast";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 export default function IdentifyPlantView() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<IdentifyPlantFromImageOutput | null>(null);
+  const [careGuide, setCareGuide] = useState<GetPlantCareGuideOutput | null>(null);
+  const [isLoadingCareGuide, setIsLoadingCareGuide] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   
@@ -25,11 +30,13 @@ export default function IdentifyPlantView() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        const photoDataUri = reader.result as string;
+        setImagePreview(photoDataUri);
         setResult(null);
+        setCareGuide(null);
         setError(null);
         setIsSaved(false);
-        handleSubmit(reader.result as string);
+        handleSubmit(photoDataUri);
       };
       reader.readAsDataURL(file);
     }
@@ -45,6 +52,21 @@ export default function IdentifyPlantView() {
       console.error(e);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGetCareGuide = async () => {
+    if (!result) return;
+    setIsLoadingCareGuide(true);
+    setCareGuide(null);
+    try {
+      const guide = await getPlantCareGuide({ plantName: result.commonName });
+      setCareGuide(guide);
+    } catch (e) {
+      setError("Sorry, I couldn't generate a care guide at this time.");
+      console.error(e);
+    } finally {
+      setIsLoadingCareGuide(false);
     }
   };
 
@@ -123,11 +145,65 @@ export default function IdentifyPlantView() {
                   <CardTitle className="font-headline text-primary text-3xl">{result.commonName}</CardTitle>
                   <CardDescription className="italic">{result.latinName}</CardDescription>
                 </CardHeader>
-                <CardContent className="flex items-start space-x-3">
-                  <Sparkles className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
-                  <p><span className="font-bold">Fun Fact:</span> {result.funFact}</p>
+                <CardContent className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <Sparkles className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
+                    <p><span className="font-bold">Fun Fact:</span> {result.funFact}</p>
+                  </div>
+                   <Button onClick={handleGetCareGuide} disabled={isLoadingCareGuide} className="w-full">
+                    {isLoadingCareGuide ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Generating Guide...
+                      </>
+                    ) : (
+                      <>
+                       <BookOpen className="mr-2 h-4 w-4"/>
+                        Get Care Guide
+                      </>
+                    )}
+                  </Button>
                 </CardContent>
-                <CardFooter>
+                {careGuide && (
+                  <CardContent>
+                    <Accordion type="single" collapsible defaultValue="item-1">
+                      <AccordionItem value="item-1">
+                        <AccordionTrigger className="font-headline text-lg">Care Guide</AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-2">
+                           <Alert>
+                              <AlertTitle>Watering</AlertTitle>
+                              <AlertDescription>{careGuide.watering}</AlertDescription>
+                          </Alert>
+                           <Alert>
+                              <AlertTitle>Sunlight</AlertTitle>
+                              <AlertDescription>{careGuide.sunlight}</AlertDescription>
+                          </Alert>
+                           <Alert>
+                              <AlertTitle>Soil</AlertTitle>
+                              <AlertDescription>{careGuide.soil}</AlertDescription>
+                          </Alert>
+                           <Alert>
+                              <AlertTitle>Fertilizer</AlertTitle>
+                              <AlertDescription>{careGuide.fertilizer}</AlertDescription>
+                          </Alert>
+                           <Alert>
+                              <AlertTitle>Placement</AlertTitle>
+                              <AlertDescription>
+                                {careGuide.isIndoor && careGuide.isOutdoor ? "Suitable for both indoor and outdoor environments." :
+                                 careGuide.isIndoor ? "Best kept as an indoor plant." :
+                                 careGuide.isOutdoor ? "Thrives as an outdoor plant." : "Placement information not available."}
+                              </AlertDescription>
+                          </Alert>
+                          <Alert>
+                              <AlertTitle>Extra Tips</AlertTitle>
+                              <AlertDescription>{careGuide.extraTips}</AlertDescription>
+                          </Alert>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </CardContent>
+                )}
+                <CardFooter className="flex-col gap-2">
                   <Button onClick={handleSaveToGarden} disabled={isSaved} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
                     {isSaved ? (
                       <>
