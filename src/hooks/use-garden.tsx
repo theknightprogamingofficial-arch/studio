@@ -28,16 +28,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   useEffect(() => {
     if (isInitialized) {
       try {
-        // Create a copy of the garden without journal photo data to save space
-        const gardenToStore = garden.map(plant => {
-          const { journalEntries, ...restOfPlant } = plant;
-          const sanitizedEntries = journalEntries?.map(entry => {
-            const { photoDataUri, ...restOfEntry } = entry;
-            return restOfEntry;
-          });
-          return { ...restOfPlant, journalEntries: sanitizedEntries };
-        });
-        localStorage.setItem(GARDEN_STORAGE_KEY, JSON.stringify(gardenToStore));
+        localStorage.setItem(GARDEN_STORAGE_KEY, JSON.stringify(garden));
       } catch (error) {
         console.error("Failed to save garden to localStorage", error);
       }
@@ -64,11 +55,10 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
           let note = entry.note;
           if(entry.photoDataUri && !note) {
               note = "Photo added";
-          } else if (entry.photoDataUri && note) {
-              note = `${note} (Photo added)`;
           }
 
           const newEntry: JournalEntry = {
+            ...entry,
             note,
             id: new Date().toISOString(),
             date: new Date().toISOString(),

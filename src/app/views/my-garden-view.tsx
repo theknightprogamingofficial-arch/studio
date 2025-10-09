@@ -143,7 +143,6 @@ const JournalDialog = ({ plant }: { plant: Plant }) => {
     });
     setNote("");
     setPhoto(null);
-    //
     if(fileInputRef.current) {
         fileInputRef.current.value = "";
     }
