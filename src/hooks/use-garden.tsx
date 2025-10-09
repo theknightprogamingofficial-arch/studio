@@ -60,6 +60,8 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
           const newEntry: JournalEntry = {
             ...entry,
             note,
+            // Do not persist photo data to localStorage to avoid quota errors
+            photoDataUri: undefined, 
             id: new Date().toISOString(),
             date: new Date().toISOString(),
           };
