@@ -61,12 +61,8 @@ export default function Home() {
                   <div className="py-2">
                     <h3 className="font-bold mb-1">Developed By</h3>
                     <ul className="list-disc list-inside text-sm mb-4">
-                      <li>Sahil Jagtap</li>
-                      <li>Omkar Gawali</li>
-                      <li>Adarsh Salunkhe</li>
+                      <li>Sahil</li>
                     </ul>
-                    <h3 className="font-bold mt-2 mb-1">Guided By</h3>
-                    <p className="text-sm">Yashanjali Sisodia</p>
                   </div>
                 </DialogContent>
               </Dialog>
